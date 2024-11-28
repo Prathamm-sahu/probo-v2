@@ -57,13 +57,26 @@ model User {
   sessions            Session[]
 }
 
+enum EventType {
+  CRICKET
+  CRYPTO
+  FOOTBALL
+  STOCKS
+  CHESS
+  NEWS
+}
+
 model OrderBook {
-  id          String @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   description String
   stockSymbol String
+  imageUrl    String     @db.Text
+  eventType   EventType
   yes         YesOrder[]
   no          NoOrder[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum OrderType {
@@ -72,21 +85,21 @@ enum OrderType {
 }
 
 model YesOrder {
-  id            String        @id @default(cuid())
-  orderBookId   String
-  orderBook     OrderBook     @relation(fields: [orderBookId], references: [id])
-  price         Int
-  quantity      Int
-  userId        String
-  orderType     OrderType
+  id          String    @id @default(cuid())
+  orderBookId String
+  orderBook   OrderBook @relation(fields: [orderBookId], references: [id])
+  price       Int
+  quantity    Int
+  userId      String
+  orderType   OrderType
 }
 
 model NoOrder {
-  id            String        @id @default(cuid())
-  orderBookId   String
-  orderBook     OrderBook     @relation(fields: [orderBookId], references: [id])
-  price         Int
-  quantity      Int
-  userId        String
-  orderType     OrderType
+  id          String    @id @default(cuid())
+  orderBookId String
+  orderBook   OrderBook @relation(fields: [orderBookId], references: [id])
+  price       Int
+  quantity    Int
+  userId      String
+  orderType   OrderType
 }
