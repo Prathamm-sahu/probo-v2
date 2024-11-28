@@ -1,18 +1,20 @@
 "use client"
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FC, Fragment, useEffect, useState } from 'react'
-import { Button, buttonVariants } from './ui/button'
-import { Menu, X } from 'lucide-react'
+import { FC, Fragment, useEffect } from 'react'
+import {  X } from 'lucide-react'
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
+import { useSidebarStore } from '@/store/sidebar-store'
 
 interface SidebarProps {
   
 }
 
 const Sidebar: FC<SidebarProps> = ({}) => {
-  const [open, setOpen] = useState<boolean>(false)
+  // const [open, setOpen] = useState<boolean>(false)
+  const open = useSidebarStore((state) => state.open)
+  const setOpen = useSidebarStore((state) => state.setOpen)
+
 
   const pathname = usePathname()
 
@@ -22,7 +24,7 @@ const Sidebar: FC<SidebarProps> = ({}) => {
 
   return (
     <div>
-      <div className='w-full flex justify-between items-center'>
+      {/* <div className='w-full flex justify-between items-center'>
         <Link
           href='/dashboard'
           className={buttonVariants({ variant: 'ghost' })}>
@@ -31,7 +33,7 @@ const Sidebar: FC<SidebarProps> = ({}) => {
         <Button onClick={() => setOpen(true)} className='gap-4'>
           Menu <Menu className='h-6 w-6' />
         </Button>
-      </div>
+      </div> */}
 
       <Transition show={open} as={Fragment}>
       <Dialog as='div' className='relative z-10' onClose={setOpen}>
