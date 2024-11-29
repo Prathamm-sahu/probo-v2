@@ -2,7 +2,6 @@ import { FC } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BriefcaseBusiness, ChevronDown, Home, WalletMinimal } from 'lucide-react'
-import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
 interface NavbarProps {
@@ -24,20 +23,20 @@ const Navbar: FC<NavbarProps> = ({}) => {
         </Link>
 
         <div className='flex gap-10 items-center justify-center'>
-          <div className='flex flex-col items-center'>
+          <Link href="/events" className='flex flex-col items-center'>
             <Home className='h-5 w-5' />
             <p className='text-sm font-light tracking-wide'>Home</p>
-          </div>
+          </Link>
 
-          <div className='flex flex-col items-center'>
+          <Link href="/events/portfolio" className='flex flex-col items-center'>
           <BriefcaseBusiness className='h-5 w-5'  />
             <p className='text-sm font-light tracking-wide'>Portfolio</p>
-          </div>
+          </Link>
 
-          <div className='flex gap-4 py-2 px-3 border-[1px] rounded-md '>
+          <Link href="/events/wallet" className='flex gap-4 py-2 px-3 border-[1px] rounded-md '>
             <WalletMinimal className='h-5 w-5' />
-            <p className='font-semibold tracking-wide'>₹0</p>
-          </div>
+            <p className='font-semibold tracking-wide'>₹143.05</p>
+          </Link>
 
           <div className='flex justify-center items-center gap-1'>
             <Avatar>

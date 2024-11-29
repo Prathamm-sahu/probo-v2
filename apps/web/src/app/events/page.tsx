@@ -1,81 +1,46 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { FC } from "react";
-import Image from "next/image";
-import { Button, buttonVariants } from "@/components/ui/button";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import OrderTab from "@/components/OrderTab";
-import PortfolioTrade from "@/components/PortfolioTrade";
-import FinancialDashboard from "@/components/FinancialDashboard";
+import EventCard from "@/components/EventCard";
+import db from "@repo/db/prismaClient";
+import EventNav from "@/components/EventNav";
 
 interface pageProps {}
 
-const page: FC<pageProps> = ({}) => {
+const page: FC<pageProps> = async ({}) => {
+  // const allEvents = await db.orderBook.findMany({})
+
+  // if(!allEvents || allEvents.length === 0) {
+  //   return (
+  //     <div>
+  //       No active events at this moment
+  //     </div>
+  //   )
+  // }
+
   return (
-    <div className="">
-      <PortfolioTrade />
-      {/* <FinancialDashboard /> */}
-      <h1>All Events</h1>
-      <div className="grid grid-cols-12">
-        <Card className="col-span-4 p-2 h-56">
-          <div className="flex items-center text-xs">
-            <Image
-              src={
-                "https://probo.gumlet.io/image/upload/probo_product_images/Bar_Chart.png"
-              }
-              alt="adfa"
-              height={20}
-              width={20}
-            />
-            29880 traders
+    <div>
+      <EventNav />
+      <div className="container mx-auto max-w-[1370px] space-y-6">
+        <h1 className="text-xl font-semibold">All Events Predict and Win</h1>
+        <div className="grid grid-cols-12">
+          <div className="col-span-8 grid grid-cols-12 gap-6">
+            {/* {allEvents.map((event) => (
+                <EventCard description={event.description} />
+          ))} */}
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_4a24f956-01f5-48e0-ae58-e807f4aef5a1.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_3a2a35f2-171d-46a1-a989-5c254eae97c4.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_48f19f75-a304-490f-8a21-764b4ce566a9.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_e75356f6-0648-4b8d-810b-a950e5feb23d.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_bc58aab9-2733-450c-84cb-10c2e49e6c72.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_b7ff0084-5001-44d5-bf45-8738c68ecab7.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_d14db80a-5b5a-4be2-bf16-c15b153e0d10.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_0016adcf-3deb-4d97-bb28-426fee2978e0.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_5b8def5e-113c-45e9-8c87-3d28346930f7.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_5d807734-8e38-4545-9e09-2e40446ad612.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_102e1dec-1cec-458f-a17f-3718bb1d4eed.png" />
+            <EventCard id="asfas" description="India to win the 3rd Test vs New Zealand?" imageUrl="https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_2cb84243-ade9-4046-b039-c8b2c40b48c2.png" />
           </div>
-
-          <div className="grid grid-cols-12">
-            <Image
-              src={
-                "https://probo.gumlet.io/image/upload/probo_product_images/IMAGE_4a24f956-01f5-48e0-ae58-e807f4aef5a1.png"
-              }
-              alt="adfa"
-              height={200}
-              width={100}
-              className="rounded-lg col-span-3"
-            />
-            <p className="col-span-9 font-medium text-lg">
-              India to win the 3rd Test vs New Zealand?
-            </p>
-          </div>
-          <p className="text-xs mt-2">IND trail by 149 runs</p>
-
-          <div className="flex space-x-1 mt-3">
-            <Link
-              href={""}
-              className={cn(
-                buttonVariants({ variant: "yes" }),
-                "w-full font-semibold"
-              )}
-            >
-              Yes ₹0
-            </Link>
-            <Link
-              href={""}
-              className={cn(
-                buttonVariants({ variant: "no" }),
-                "w-full font-semibold"
-              )}
-            >
-              No ₹0
-            </Link>
-          </div>
-        </Card>
-
-        <OrderTab />
+          <div className="col-span-4 h-full"></div>
+        </div>
       </div>
     </div>
   );

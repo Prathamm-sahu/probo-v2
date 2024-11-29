@@ -24,6 +24,7 @@
     "express": "^4.21.1",
     "ioredis": "^5.4.1",
     "nanoid": "^5.0.7",
-    "esbuild": "^0.24.0"
+    "esbuild": "^0.24.0",
+    "@repo/db": "workspace:*"
   }
 }

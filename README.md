@@ -12,3 +12,9 @@
 
 5. Redis Response Pub/Sub → WebSocket Server:
    The WebSocket server also listens to the Redis response pub/sub. When an updated orderbook is available, it broadcasts the orderbook of that particular stock symbol to all connected WebSocket clients.
+
+Revision
+1. Types of realtionships in prisma
+   a. Recursive relation
+   b. many-many realtion - See how harkirat optimized it in metaverse porject
+   c. Chat realtion 

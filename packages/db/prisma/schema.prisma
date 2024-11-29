@@ -64,6 +64,13 @@ enum EventType {
   STOCKS
   CHESS
   NEWS
+  KABADDI
+  ELECTIONS
+  YOUTUBE
+  ECONOMY
+  BASKETBALL
+  MOTORSPORTS
+  TENNIS
 }
 
 model OrderBook {

@@ -7,19 +7,22 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./ui/button";
 import { useSidebarStore } from "@/store/sidebar-store";
+import { useRouter } from "next/navigation";
 
 interface EventCardProps {
+  id: string
   description: string
   imageUrl: string
 }
 
 
 
-const EventCard: FC<EventCardProps> = ({ description, imageUrl }) => {
+const EventCard: FC<EventCardProps> = ({ id, description, imageUrl }) => {
   const setOpen = useSidebarStore((state) => state.setOpen)
+  const router = useRouter()
 
   return (
-    <Card className="col-span-6 p-2 h-56 bg-white">
+    <Card className="col-span-6 p-2 h-56 bg-white" onClick={() => router.push(`/events/${id}`)}>
       <div className="flex items-center text-xs">
         <Image
           src={

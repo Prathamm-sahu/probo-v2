@@ -9,11 +9,11 @@ interface WalletPageProps {
 
 const WalletPage: FC<WalletPageProps> = async ({}) => {
 
-  const session = await getAuthSession()
+  // const session = await getAuthSession()
 
-  if(!session) {
-    return notFound()
-  }
+  // if(!session) {
+  //   return notFound()
+  // }
 
   return (
     <div>

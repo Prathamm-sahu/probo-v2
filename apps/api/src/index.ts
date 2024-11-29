@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import { RedisManager } from "./RedisManager"
+import db from "@repo/db/prismaClient"
 import { CREATE_USER, ONRAMP, SELL_ORDER, USER_BALANCE ,MINT, STOCK_SYMBOL, BUY_ORDER ,CREATE_MARKET, RESETALL} from "./types/toEngine"
 dotenv.config()
 
@@ -127,7 +128,16 @@ app.post('/order/buy', async (req, res) => {
 //create new market
 
 app.post('/create/market', async (req,res)=>{
-  const { stockSymbol } = req.body
+  const { stockSymbol, name, description } = req.body
+
+  await db.orderBook.create({
+    data: {
+      name,
+      stockSymbol,
+      description,
+    }
+  })
+
   const response = await RedisManager.getInstance().sendAndAwait({
     type: CREATE_MARKET,
     data:{

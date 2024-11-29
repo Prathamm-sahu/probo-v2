@@ -3,17 +3,11 @@ import localFont from "next/font/local";
 import "../styles/globals.css";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import { Toaster } from "@/components/ui/toaster";
+import { Work_Sans } from "next/font/google"
+import { cn } from "@/lib/utils";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Work_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn(inter.className)}>
       <body
         className="min-h-screen pt-12 bg-[#f5f5f5] slate-50 antialiazed"
       >
@@ -35,6 +29,7 @@ export default function RootLayout({
         </div>
         <Navbar />
         {children}
+        <Toaster />
       </body>
     </html>
   );
