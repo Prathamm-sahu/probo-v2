@@ -28,14 +28,36 @@ app.post("/user/create/:userId", async (req, res) => {
 app.post("/onramp/inr", async (req, res) => {
   const { userId, amount } = req.body
   let num = Number(amount)
+
+  const user = await db.user.findFirst({
+    where: {
+      id: userId
+    }
+  })
+
+  if(!user) {
+    res.json({
+      msg: "User does not exist."
+    })
+    return;
+  }
+
   const response = await RedisManager.getInstance().sendAndAwait({
     type: ONRAMP,
     data: {
       userId,
       amount: num
     }
-  }
-  )
+  })
+
+  await db.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      availableInrBalance: user.availableInrBalance + amount
+    }
+  })
   res.json(response.payload)
 })
 
@@ -96,6 +118,34 @@ app.get('/orderbook/:stocksymbol', async(req,res)=>{
 //minting
 app.post('/trade/mint', async (req, res) => {
   const { userId, stockSymbol, price } = req.body;
+
+  const user = await db.user.findFirst({
+    where: {
+      id: userId
+    }
+  })
+
+  if(!user) {
+    res.json({
+      msg: "User does not exist."
+    })
+    return;
+  }
+
+  const orderbook = db.orderBook.findFirst({
+    where: {
+      stockSymbol
+    }
+  })
+
+  if(!orderbook) {
+    res.json({
+      msg: "Market doesn't exist"
+    })
+  }
+
+  
+
   const response = await RedisManager.getInstance().sendAndAwait({
     type: MINT,
     data: {
