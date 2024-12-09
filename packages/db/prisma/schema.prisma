@@ -44,15 +44,15 @@ model Session {
 }
 
 model User {
-  id                  String    @id @default(cuid())
+  id                  String              @id @default(cuid())
   name                String?
-  email               String?   @unique
+  email               String?             @unique
   emailVerified       DateTime?
-  username            String?   @unique
+  username            String?             @unique
   image               String?
-  availableInrBalance Int       @default(1500)
-  lockedInrBalance    Int       @default(0)
-  stockBalance        Json?
+  availableInrBalance Int                 @default(1500)
+  lockedInrBalance    Int                 @default(0)
+  orders              UserExecutedOrder[]
   accounts            Account[]
   sessions            Session[]
 }
@@ -73,17 +73,18 @@ enum EventType {
   TENNIS
 }
 
-model OrderBook {
-  id          String     @id @default(cuid())
+model Event {
+  id          String              @id @default(cuid())
   name        String
   description String
   stockSymbol String
-  imageUrl    String     @db.Text
+  imageUrl    String              @db.Text
   eventType   EventType
   yes         YesOrder[]
   no          NoOrder[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  allOrders   UserExecutedOrder[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 }
 
 enum OrderType {
@@ -94,7 +95,7 @@ enum OrderType {
 model YesOrder {
   id          String    @id @default(cuid())
   orderBookId String
-  orderBook   OrderBook @relation(fields: [orderBookId], references: [id])
+  orderBook   Event     @relation(fields: [orderBookId], references: [id])
   price       Int
   quantity    Int
   userId      String
@@ -104,9 +105,28 @@ model YesOrder {
 model NoOrder {
   id          String    @id @default(cuid())
   orderBookId String
-  orderBook   OrderBook @relation(fields: [orderBookId], references: [id])
+  orderBook   Event     @relation(fields: [orderBookId], references: [id])
   price       Int
   quantity    Int
   userId      String
   orderType   OrderType
+}
+
+// This table stores the data which is executed by each user
+model UserExecutedOrder {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  eventId     String
+  event       Event     @relation(fields: [eventId], references: [id])
+  orderType   OrderType
+  investement Int
+  returns     Int
+  quantity    Int
+  price       Int
+  settled     Boolean?
+  cancelled   Boolean?
+  rejected    Boolean?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
