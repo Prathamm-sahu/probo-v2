@@ -94,8 +94,8 @@ enum OrderType {
 
 model YesOrder {
   id          String    @id @default(cuid())
-  orderBookId String
-  orderBook   Event     @relation(fields: [orderBookId], references: [id])
+  eventId String
+  event   Event     @relation(fields: [eventId], references: [id])
   price       Int
   quantity    Int
   userId      String
@@ -104,8 +104,8 @@ model YesOrder {
 
 model NoOrder {
   id          String    @id @default(cuid())
-  orderBookId String
-  orderBook   Event     @relation(fields: [orderBookId], references: [id])
+  eventId String
+  event   Event     @relation(fields: [eventId], references: [id])
   price       Int
   quantity    Int
   userId      String
