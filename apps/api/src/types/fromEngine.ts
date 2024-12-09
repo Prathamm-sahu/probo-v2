@@ -7,7 +7,8 @@ export type MessageFromEngine = {
 } | {
   type: "ONRAMPED",
   payload: {
-    msg: string
+    msg: string,
+    description: string
   }
 } | {
   type: "MARKET_CREATED",

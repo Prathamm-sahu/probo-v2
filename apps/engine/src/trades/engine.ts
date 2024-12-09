@@ -176,7 +176,8 @@ export class Engine {
         RedisManager.getInstance().sendToApi(clientId, {
           type: "ONRAMPED",
           payload: {
-            msg: `OnRamped user ${id} with ${amount}`,
+            msg: "success",
+            description: `OnRamped user ${id} with ${amount}`,
           },
         });
         break;
