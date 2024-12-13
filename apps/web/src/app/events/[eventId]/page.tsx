@@ -8,8 +8,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
+import db from "@repo/db/prismaClient"
 
-export default function EventDetails() {
+export default function EventDetails({ params: { eventId }}: { params: { eventId: string }}) {
   const [price, setPrice] = useState(7.0)
   const [quantity, setQuantity] = useState(10)
   
@@ -23,6 +24,37 @@ export default function EventDetails() {
 
   const maxQtyYes = useMemo(() => Math.max(...orderBookData.map(row => row.qtyYes)), [orderBookData])
   const maxQtyNo = useMemo(() => Math.max(...orderBookData.map(row => row.qtyNo)), [orderBookData])
+
+  const fetchEventOrderBook = async () => {
+    try {
+      const event = await db.event.findFirst({
+        where: {
+          id: eventId
+        },
+        include: {
+          yesOrders: {
+            include: {
+              userOrders: true
+            }
+          },
+          noOrders: {
+            include: {
+              userOrders: true
+            }
+          }
+        }
+      })
+      
+      const orderbookData = event?.yesOrders?.map((data) => ({
+        price,
+        quantity
+      }))
+
+
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

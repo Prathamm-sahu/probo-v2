@@ -16,6 +16,7 @@ import {
 import { BuyOrder, Orderbook, SellOrder, Order } from "./orderBook";
 import fs from "fs";
 import { Fills, Reverse } from "./orderBook";
+import db from "@repo/db/prismaClient"
 
 interface UserBalance {
   [userId: string]: {
@@ -128,8 +129,8 @@ export class Engine {
       }
 
       case BUY_ORDER: {
-        const { userId, price, quantity, stockSymbol, stockType } = message.data
-        const response = this.buyOrder(userId, quantity, price, stockType, stockSymbol)
+        const { userId, price, quantity, stockSymbol, stockType, eventId } = message.data
+        const response = this.buyOrder(userId, quantity, price, stockType, stockSymbol, eventId)
         RedisManager.getInstance().sendToApi(clientId, response)
         this.publishWsTrade({ userId, stockSymbol })
         break;
@@ -148,7 +149,8 @@ export class Engine {
             quantity,
             stockType,
             stockSymbol,
-            price
+            price,
+            message.data.eventId
           );
 
           RedisManager.getInstance().sendToApi(clientId, response);
@@ -209,8 +211,10 @@ export class Engine {
         const response = this.onMint(
           message.data.userId,
           message.data.price,
-          message.data.stockSymbol
+          message.data.stockSymbol,
+          message.data.eventId
         );
+
         RedisManager.getInstance().sendToApi(clientId, response);
         console.log(this.inrbalances);
         console.log(JSON.stringify(this.stockbalances));
@@ -327,7 +331,7 @@ export class Engine {
     }
   }
 
-  buyOrder(userId: string, quantity: number, price: number, stockType: "yes" | "no", stockSymbol: string) {
+  buyOrder(userId: string, quantity: number, price: number, stockType: "yes" | "no", stockSymbol: string, eventId: string) {
     const orderBook = this.orderbooks.find((o) => o.stockSymbol === stockSymbol)
     if (!orderBook) {
       return {
@@ -360,6 +364,8 @@ export class Engine {
 
     this.inrbalances[userId]!.available -= requiredBalance
     this.inrbalances[userId]!.locked += requiredBalance
+    
+    // Update user balance in db
     
     if (stockType == "yes") {
       let yesSortedKeys = Object.keys(orderBook.yes!).sort()
@@ -423,7 +429,7 @@ export class Engine {
     }
   }
 
-  onMint(userId: string, amount: number, stockSymbol: string) {
+  onMint(userId: string, amount: number, stockSymbol: string, eventId: string) {
     const orderBook = this.orderbooks.find(
       (o) => o.stockSymbol === stockSymbol
     );
@@ -500,7 +506,7 @@ export class Engine {
     return filteredOrders.sort((a, b) => a.price - b.price);
   }
 
-  sell(userId: string, quantity: number, stockType: "yes" | "no", stockSymbol: string, price: number) {
+  async sell(userId: string, quantity: number, stockType: "yes" | "no", stockSymbol: string, price: number, eventId: string) {
     const orderBook = this.orderbooks.find(
       (o) => o.stockSymbol === stockSymbol
     );
@@ -513,8 +519,8 @@ export class Engine {
       };
     }
 
-    this.initializeStockBalances({ userId, stockSymbol })
-    console.log("Inside Engine Sell Function -----> ", this.stockbalances)
+    // this.initializeStockBalances({ userId, stockSymbol })
+    console.log("Inside Engine Sell Function -----> ", JSON.stringify(this.stockbalances))
     if ((stockType = "yes")) {
       if (this.stockbalances[userId]![stockSymbol]!.yes!.quantity < quantity) {
         return {
@@ -534,6 +540,41 @@ export class Engine {
         quantity: quantity,
       };
       orderBook.sell(order);
+      const yesOrder = await db.yesOrder.upsert({
+        where: {
+          eventId
+        },
+        update: {
+          totalQuantity: {
+            increment: quantity
+          }
+        },
+        create: {
+          eventId,
+          totalQuantity: quantity,
+          price,
+          reverseOrdersTotalQuantity: 0
+        }
+      })
+
+      db.userYesOrder.upsert({
+        where: {
+          userId_yesOrderId: {
+            userId,
+            yesOrderId: yesOrder.id
+          }
+        },
+        update: {
+          quantity: {
+            increment: quantity
+          }
+        },
+        create: {
+          userId,
+          quantity,
+          yesOrderId: yesOrder.id
+        }
+      })
 
       // to implement websocket logic here to make orerbook changes in ui
       return {
@@ -563,6 +604,43 @@ export class Engine {
       };
       //implement ws logic here
       orderBook.sell(order);
+
+      const noOrder = await db.noOrder.upsert({
+        where: {
+          eventId
+        },
+        update: {
+          totalQuantity: {
+            increment: quantity
+          }
+        },
+        create: {
+          eventId,
+          totalQuantity: quantity,
+          price,
+          reverseOrdersTotalQuantity: 0
+        }
+      })
+
+      db.userNoOrder.upsert({
+        where: {
+          userId_noOrderId: {
+            userId,
+            noOrderId: noOrder.id
+          }
+        },
+        update: {
+          quantity: {
+            increment: quantity
+          }
+        },
+        create: {
+          userId,
+          quantity,
+          noOrderId: noOrder.id
+        }
+      })
+
       return { userId, quantity, price, stockType, stockSymbol };
     }
   }

@@ -44,17 +44,20 @@ model Session {
 }
 
 model User {
-  id                  String              @id @default(cuid())
+  id                  String                @id @default(cuid())
   name                String?
-  email               String?             @unique
+  email               String?               @unique
   emailVerified       DateTime?
-  username            String?             @unique
+  username            String?               @unique
   image               String?
-  availableInrBalance Int                 @default(1500)
-  lockedInrBalance    Int                 @default(0)
-  orders              UserExecutedOrder[]
+  availableInrBalance Int
+  lockedInrBalance    Int
   accounts            Account[]
   sessions            Session[]
+  UserYesOrder        UserYesOrder[]
+  ReverseUserYesOrder ReverseUserYesOrder[]
+  UserNoOrder         UserNoOrder[]
+  ReverseUserNoOrder  ReverseUserNoOrder[]
 }
 
 enum EventType {
@@ -74,17 +77,16 @@ enum EventType {
 }
 
 model Event {
-  id          String              @id @default(cuid())
-  name        String
+  id          String    @id @default(cuid())
+  title       String
   description String
-  stockSymbol String
-  imageUrl    String              @db.Text
+  stockSymbol String    @unique
+  imageUrl    String    @db.Text
   eventType   EventType
-  yes         YesOrder[]
-  no          NoOrder[]
-  allOrders   UserExecutedOrder[]
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  yesOrders   YesOrder[]
+  noOrders    NoOrder[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum OrderType {
@@ -93,40 +95,67 @@ enum OrderType {
 }
 
 model YesOrder {
-  id          String    @id @default(cuid())
-  eventId String
-  event   Event     @relation(fields: [eventId], references: [id])
-  price       Int
-  quantity    Int
-  userId      String
-  orderType   OrderType
+  id                         String                @id @default(cuid())
+  eventId                    String                
+  event                      Event                 @relation(fields: [eventId], references: [id])
+  price                      Int
+  totalQuantity              Int
+  userOrders                 UserYesOrder[]
+  reverseOrdersTotalQuantity Int
+  reverseUserOrders          ReverseUserYesOrder[]
 }
 
 model NoOrder {
-  id          String    @id @default(cuid())
-  eventId String
-  event   Event     @relation(fields: [eventId], references: [id])
-  price       Int
-  quantity    Int
-  userId      String
-  orderType   OrderType
+  id                         String               @id @default(cuid())
+  eventId                    String               
+  event                      Event                @relation(fields: [eventId], references: [id])
+  price                      Int
+  totalQuantity              Int
+  userOrders                 UserNoOrder[]
+  reverseOrdersTotalQuantity Int
+  reverseUserOrders          ReverseUserNoOrder[]
 }
 
-// This table stores the data which is executed by each user
-model UserExecutedOrder {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
-  eventId     String
-  event       Event     @relation(fields: [eventId], references: [id])
-  orderType   OrderType
-  investement Int
-  returns     Int
-  quantity    Int
-  price       Int
-  settled     Boolean?
-  cancelled   Boolean?
-  rejected    Boolean?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+model UserYesOrder {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  quantity   Int
+  yesOrderId String
+  yesOrder   YesOrder @relation(fields: [yesOrderId], references: [id])
+
+  @@unique([userId, yesOrderId])
+}
+
+model ReverseUserYesOrder {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  quantity   Int
+  yesOrderId String
+  yesOrder   YesOrder @relation(fields: [yesOrderId], references: [id])
+
+  @@unique([userId, yesOrderId])
+}
+
+model UserNoOrder {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  quantity  Int
+  noOrderId String
+  noOrder   NoOrder @relation(fields: [noOrderId], references: [id])
+
+  @@unique([userId, noOrderId])
+}
+
+model ReverseUserNoOrder {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  quantity  Int
+  noOrderId String
+  noOrder   NoOrder @relation(fields: [noOrderId], references: [id])
+
+  @@unique([userId, noOrderId])
 }

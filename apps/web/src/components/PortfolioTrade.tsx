@@ -25,7 +25,7 @@ const PortfolioTrade: FC<PortfolioTradeProps> = ({}) => {
           </div>
           <div>
             <div className="text-xl font-semibold">₹0</div>
-            <div className="text-sm text-gray-500">Live Gains</div>
+            <div className="text-sm text-gray-500">Today's return</div>
           </div>
           <div>
             <div className="text-xl font-semibold">427298</div>

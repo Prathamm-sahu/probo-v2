@@ -1,6 +1,6 @@
 import FinancialDashboard from '@/components/FinancialDashboard'
 import { getAuthSession } from '@/lib/auth'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { FC, useState } from 'react'
 
 interface WalletPageProps {
@@ -8,12 +8,11 @@ interface WalletPageProps {
 }
 
 const WalletPage: FC<WalletPageProps> = async ({}) => {
+  const session = await getAuthSession()
 
-  // const session = await getAuthSession()
-
-  // if(!session) {
-  //   return notFound()
-  // }
+  if(!session) {
+    return redirect("/sign-in")
+  }
 
   return (
     <div>

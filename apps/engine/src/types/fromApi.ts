@@ -33,6 +33,7 @@ export type MessageFromApi =
         quantity: number;
         stockSymbol: string;
         stockType: "yes" | "no";
+        eventId: string
       };
     }
   | {
@@ -43,6 +44,7 @@ export type MessageFromApi =
         quantity: number;
         price: number;
         stockType: "yes" | "no";
+        eventId: string
       };
     }
   | {
@@ -75,6 +77,7 @@ export type MessageFromApi =
         userId: string;
         stockSymbol: string;
         price: number;
+        eventId: string;
       };
     } 
   | {

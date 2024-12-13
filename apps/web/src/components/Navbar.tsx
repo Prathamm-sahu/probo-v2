@@ -1,14 +1,20 @@
+"use client"
+
 import { FC } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BriefcaseBusiness, ChevronDown, Home, WalletMinimal } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { userStore } from '@/store/user-store'
 
 interface NavbarProps {
   
 }
 
 const Navbar: FC<NavbarProps> = ({}) => {
+  const availableBalance = userStore((state) => state.availableBalance)
+  const lockedBalance = userStore((state) => state.lockedBalance)
+  
   return (
     <nav className='fixed top-0 inset-x-0 h-fit bg-[#f5f5f5] border-b border-zinc-300 z-[10] py-2'>
       <div className='container max-w-[1400px] h-full mx-auto flex items-center justify-between gap-2'>
@@ -35,7 +41,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
 
           <Link href="/events/wallet" className='flex gap-4 py-2 px-3 border-[1px] rounded-md '>
             <WalletMinimal className='h-5 w-5' />
-            <p className='font-semibold tracking-wide'>₹143.05</p>
+            <p className='font-semibold tracking-wide'>₹{availableBalance + lockedBalance}</p>
           </Link>
 
           <div className='flex justify-center items-center gap-1'>

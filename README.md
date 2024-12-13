@@ -18,3 +18,7 @@ Revision
    a. Recursive relation
    b. many-many realtion - See how harkirat optimized it in metaverse porject
    c. Chat realtion 
+
+In Probo There are multiple events
+Each events has multitple orders executed users
+User can buy multiple orders from a single event.

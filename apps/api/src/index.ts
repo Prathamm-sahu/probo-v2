@@ -2,13 +2,14 @@ import express from "express"
 import dotenv from "dotenv"
 import { RedisManager } from "./RedisManager"
 import db from "@repo/db/prismaClient"
+import cors from "cors"
 import { CREATE_USER, ONRAMP, SELL_ORDER, USER_BALANCE ,MINT, STOCK_SYMBOL, BUY_ORDER ,CREATE_MARKET, RESETALL} from "./types/toEngine"
 dotenv.config()
 
 const PORT = process.env.PORT || 3005
 const app = express()
 app.use(express.json())
-
+app.use(cors())
 
 //user creation endpoint
 app.post("/user/create/:userId", async (req, res) => {
@@ -50,21 +51,23 @@ app.post("/onramp/inr", async (req, res) => {
     }
   })
 
-  await db.user.update({
-    where: {
-      id: userId
-    },
-    data: {
-      availableInrBalance: user.availableInrBalance + amount
-    }
-  })
+  // await db.user.update({
+  //   where: {
+  //     id: userId
+  //   },
+  //   data: {
+  //     availableInrBalance: {
+  //       increment: num
+  //     } 
+  //   }
+  // })
   res.json(response.payload)
 })
 
 //sell order endpoint 
 
 app.post("/order/sell", async (req, res) => {
-  const { userId, stockSymbol, quantity, price, stockType } = req.body
+  const { userId, stockSymbol, quantity, price, stockType, eventId } = req.body
   const response = await RedisManager.getInstance().sendAndAwait({
     type: SELL_ORDER,
     data: {
@@ -72,7 +75,8 @@ app.post("/order/sell", async (req, res) => {
       stockSymbol, 
       quantity, 
       price, 
-      stockType
+      stockType,
+      eventId
     }
   })
   res.json(response.payload)
@@ -88,7 +92,7 @@ app.get('/balance/inr/:userId', async (req, res) => {
     }
   })
 
-  res.json(response.payload)
+  res.json(response)
 })
 
 app.get('/balance/stock/:userId', async (req, res) => {
@@ -115,24 +119,24 @@ app.get('/orderbook/:stocksymbol', async(req,res)=>{
 
 
 
-//minting
+//minting. This is the route for market makers.
 app.post('/trade/mint', async (req, res) => {
-  const { userId, stockSymbol, price } = req.body;
+  const { userId, stockSymbol, price, eventId } = req.body;
 
-  const user = await db.user.findFirst({
-    where: {
-      id: userId
-    }
-  })
+  // const user = await db.user.findFirst({
+  //   where: {
+  //     id: userId
+  //   }
+  // })
 
-  if(!user) {
-    res.json({
-      msg: "User does not exist."
-    })
-    return;
-  }
+  // if(!user) {
+  //   res.json({
+  //     msg: "User does not exist."
+  //   })
+  //   return;
+  // }
 
-  const orderbook = db.orderBook.findFirst({
+  const orderbook = db.event.findFirst({
     where: {
       stockSymbol
     }
@@ -144,14 +148,13 @@ app.post('/trade/mint', async (req, res) => {
     })
   }
 
-  
-
   const response = await RedisManager.getInstance().sendAndAwait({
     type: MINT,
     data: {
       userId: userId,
       stockSymbol: stockSymbol,
-      price: price
+      price: price,
+      eventId
     }
 
   })
@@ -159,7 +162,7 @@ app.post('/trade/mint', async (req, res) => {
 })
 
 app.post('/order/buy', async (req, res) => {
-  const { userId, stockSymbol, quantity, price, stockType } = req.body
+  const { userId, stockSymbol, eventId, quantity, price, stockType } = req.body
   const response = await RedisManager.getInstance().sendAndAwait({
     type: BUY_ORDER,
     data:{
@@ -167,7 +170,8 @@ app.post('/order/buy', async (req, res) => {
       stockSymbol: stockSymbol,
       quantity,
       price ,
-      stockType     
+      stockType,
+      eventId,   
     }
   })
 
@@ -178,13 +182,15 @@ app.post('/order/buy', async (req, res) => {
 //create new market
 
 app.post('/create/market', async (req,res)=>{
-  const { stockSymbol, name, description } = req.body
+  const { stockSymbol, title, description, imageUrl, eventType } = req.body
 
-  await db.orderBook.create({
+  await db.event.create({
     data: {
-      name,
+      title,
       stockSymbol,
       description,
+      imageUrl,
+      eventType
     }
   })
 

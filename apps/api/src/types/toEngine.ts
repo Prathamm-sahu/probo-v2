@@ -33,6 +33,7 @@ export type MessageToEngine =
         quantity: number;
         stockSymbol: string;
         stockType: "yes" | "no";
+        eventId: string
       };
     }
   | {
@@ -42,7 +43,8 @@ export type MessageToEngine =
         stockSymbol: string;
         quantity: number;
         price: number;
-        stockType: "yes" | "No";
+        stockType: "yes" | "no";
+        eventId: string
       };
     }
   | {
@@ -76,6 +78,7 @@ export type MessageToEngine =
         userId: string;
         stockSymbol: string;
         price: number;
+        eventId: string;
       };
     } | {
       type: typeof CREATE_MARKET;
